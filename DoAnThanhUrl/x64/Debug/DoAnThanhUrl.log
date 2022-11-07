@@ -1,4 +1,4 @@
 ﻿  Source.cpp
-C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\Source.cpp(20,6): error C2143: syntax error: missing ';' before '*'
-C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\Source.cpp(20,6): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\Source.cpp(20,9): error C2238: unexpected token(s) preceding ';'
+C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\Source.cpp(119,16): warning C4553: '==': result of expression not used; did you intend '='?
+C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\Source.cpp(120,16): warning C4553: '==': result of expression not used; did you intend '='?
+  DoAnThanhUrl.vcxproj -> C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\x64\Debug\DoAnThanhUrl.exe

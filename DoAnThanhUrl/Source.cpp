@@ -7,59 +7,10 @@
 
 using namespace std;
 
-//  ======= Cai dat stack
-struct Node {
-	string data;
-	Node* next;
-};
-typedef struct Node* stack;
-Node* createNodeStack(string data) {
-    Node* p = new Node();
-    if (p == NULL) {
-        return NULL;
-    }
-    p->data = data;
-    p->next = NULL;
-
-    return p;
-}
-bool isEmpty(stack s) {
-    return (s == NULL);
-}
-void push(stack& s, string data) {
-    Node* ptr = createNodeStack(data);
-    if (isEmpty(s)) {
-        s = ptr;
-    }
-    else {
-        ptr->next = s;
-        s = ptr;
-    }
-}
-string pop(stack& s) {
-    if (!isEmpty(s)) {
-        string data = s->data;
-        Node* x = s;
-        s = s->next;
-        delete(x);
-        return data;
-    }
-    else {
-        return;
-    }
-}
-string top(stack s) {
-    if (!isEmpty(s)) {
-        return s->data;
-    }
-    else {
-        return;
-    }
-}
-
 // ======= Cai dat double link list
 struct NodeUrl {
 	string data;
+    bool check = false;
 	NodeUrl* prev, * next = NULL;
 };
 struct HistoryList
@@ -75,7 +26,7 @@ NodeUrl* GetNewNode(string x) {
     return newNode;
 }
 void InsertAtTail(HistoryList* l ,string x) {
-    NodeUrl* newNode = new NodeUrl();
+    NodeUrl* newNode = GetNewNode(x);
     if (l->head == NULL) {
         l->head = newNode;
         l->tail = newNode;
@@ -85,7 +36,6 @@ void InsertAtTail(HistoryList* l ,string x) {
     newNode->prev = l->tail;
     l->tail = newNode;
 }
-// Lam them insert vao giua 
 void DeleteAtHead(HistoryList* l) {
     if (l->head == NULL) {
         return;
@@ -100,12 +50,204 @@ void DeleteAtTail(HistoryList* l) {
     l->tail = l->tail->prev;
     l->tail->next = NULL;
 }
+void PrintUrl(HistoryList l) {
+    NodeUrl* temp = l.tail;
+    while (temp->check == true) {
+        temp = temp->prev;
+    }
+    while (temp != NULL) {
+        cout << temp->data <<" ";
+        temp = temp->prev;
+    }
+    
+}
+string previousUrl(HistoryList &l) {
+    NodeUrl* newNode = new NodeUrl;
+    newNode = l.tail;
+    while (newNode->check == true) {
+        newNode = newNode->prev;
+    }
+    newNode->check = true;
+    newNode = newNode->prev;
+
+    string data = newNode->data;
+    
+    return data;
+}
+string forwardUrl(HistoryList& l) {
+    NodeUrl* newNode = new NodeUrl;
+    newNode = l.tail;
+    while (newNode->check == true) {
+        newNode = newNode->prev;
+    }
+    newNode = newNode->next;
+    newNode->check = false;
+    string data = newNode->data;
+
+    return data;
+}
+// ======= Cai dat linked list
+struct Node {
+    string x;
+    Node* next;
+};
+struct List {
+    Node* head =NULL;
+    Node* tail =NULL;
+};
+Node* createNode(string val) {
+    Node* node = new Node;
+    node->x = val;
+    node->next = NULL;
+    return node;
+}
+void addLastNode(List& l, Node* p) {
+    if (l.head == NULL) {
+        l.head = p;
+        l.tail = p;
+    }
+    else {
+        l.tail->next = p;
+        l.tail = p;
+    }
+}
+void xoaNode(List& l, Node* node) {
+    if (l.head == NULL && l.tail == NULL) {
+        return;
+    }
+    else if (l.head == l.tail) {
+        l.head == NULL;
+        l.tail == NULL;
+    }
+    else if (node->x == l.head->x) {
+        Node* p = l.head;
+        l.head = l.head->next;
+        delete p;
+    }
+    else if (node->x == l.tail->x) {
+        Node* p = l.tail;
+        l.tail = l.tail->next;
+        delete p;
+    }
+    else {
+        Node* previous = l.head;
+        Node* p = l.head;
+        while (p != NULL) {
+
+            if (p->next->x == node->x) {
+                Node* temp = p->next;
+                p->next = p->next->next;
+                delete temp;
+                continue;
+            }
+
+            p = p->next;
+            if (p->next == NULL) {
+                break;
+            }
+        }
+    }
+}
+void PrintLinkedList(List l) {
+    for (Node* i = l.head; i != NULL; i = i->next) {
+        cout << i->x << " ";
+    }
+}
 
 // ======= Cai dat mang luu lich su 
-string History[MAX];
+string BigHistory[MAX];
+List BookMark ;
+void addBookMark(List &bm,string s) {
+    Node* p = createNode(s);
+    addLastNode(bm, p);
+}
+void deleteBookMark(List& bm, string s) {
+    Node* p = createNode(s);
+    xoaNode(bm, p);
+}
 
 int main() {
     
+    string str[4] = { "leetcode.com","facebook.com","youtube.com", "zalo.com"};
+   
+    HistoryList l;
+    for (int i = 0; i < 4; i++) {
+        InsertAtTail(&l, str[i]);
+        addBookMark(BookMark, str[i]);
+        BigHistory[i] = str[i];
+    }
+    PrintUrl(l);
+    cout << endl;
+    cout << previousUrl(l) << endl;
+    cout << previousUrl(l)<<endl;
+    PrintUrl(l);
+    cout << endl;
+    cout << forwardUrl(l) << endl;
+    PrintUrl(l);
+
+    /*PrintLinkedList(BookMark);
+    deleteBookMark(BookMark, "zalo.com");
+    cout << endl;
+    PrintLinkedList(BookMark);*/
 
     return 0;
 }
+
+
+
+//  ======= Cai dat stack
+//struct Node {
+//	string data;
+//	Node* next;
+//};
+//typedef struct Node* stack;
+//Node* createNodeStack(string data) {
+//    Node* p = new Node();
+//    if (p == NULL) {
+//        return NULL;
+//    }
+//    p->data = data;
+//    p->next = NULL;
+//
+//    return p;
+//}
+//bool isEmpty(stack& s) {
+//    return (s == NULL);
+//}
+//void push(stack& s, string data) {
+//    Node* ptr = createNodeStack(data);
+//    if (isEmpty(s)) {
+//        s = ptr;
+//    }
+//    else {
+//        ptr->next = s;
+//        s = ptr;
+//    }
+//}
+//string pop(stack& s) {
+//    if (!isEmpty(s)) {
+//        string data = s->data;
+//        Node* x = s;
+//        s = s->next;
+//        delete(x);
+//        return data;
+//    }
+//    else {
+//        return 0;
+//    }
+//}
+//string top(stack s) {
+//    if (!isEmpty(s)) {
+//        return s->data;
+//    }
+//    else {
+//        return 0;
+//    }
+//}
+//
+//void PrintStack(stack& s) {
+//    while (!isEmpty(s)) {
+//        cout << pop(s);
+//        cout << endl;
+//    }
+//}
