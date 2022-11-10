@@ -223,7 +223,6 @@ void pageNhap(HistoryList l)
     system("CLS");
     cout << "Nhap URL: ";
     cin >> u;
-    InsertAtTail(&l, u);
 }
 
 void pageBookMark(List& bm)
@@ -291,16 +290,13 @@ int main() {
             pageNhap(l);
             break;
         case 2:
-            cout << endl;
             forwardUrl(l);
             break;
         case 3:
-            cout << endl;
             previousUrl(l);
             break;
         case 4:
             pageBookMark(BookMark);
-            _getch();
             break;
         case 5:
             pageHistory(l);
