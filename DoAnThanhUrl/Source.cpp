@@ -1,8 +1,10 @@
-#include<iostream>
-#include<stdio.h>
-#include<windows.h>
-#include<string>
-#include<time.h>
+#include <iostream>
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <string.h>
+#include <string>
+#include <time.h>
 #define MAX 100
 
 using namespace std;
@@ -116,8 +118,8 @@ void xoaNode(List& l, Node* node) {
         return;
     }
     else if (l.head == l.tail) {
-        l.head == NULL;
-        l.tail == NULL;
+        l.head = NULL;
+        l.tail = NULL;
     }
     else if (node->x == l.head->x) {
         Node* p = l.head;
@@ -166,6 +168,78 @@ void deleteBookMark(List& bm, string s) {
     xoaNode(bm, p);
 }
 
+
+
+void gotoxy(int x, int y) {
+    static HANDLE  h = NULL;
+    if (!h)
+        h = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD c = { x,y };
+    SetConsoleCursorPosition(h, c);
+}
+
+int selection(int start, int end, int y)
+{
+    int select = 1;
+    int y0 = -1;
+    gotoxy(0, select + y - 1);
+    cout << char(16);
+
+    while (1)
+    {
+        char key = _getch();
+
+        if (key == 13)
+        {
+            gotoxy(0, y0);
+            cout << char(32);
+            break;
+        }
+        if (key == 80 || key == 77)
+            select++;
+
+        if (key == 72 || key == 75)
+            select--;
+
+        if (select > end)
+            select = start;
+        else if (select < start)
+            select = end;
+
+        gotoxy(0, y0);
+        cout << char(32);
+        gotoxy(0, select + y - 1);
+        cout << char(16);
+
+
+        y0 = select + y - 1;
+    }
+    return select;
+}
+
+void pageNhap(HistoryList l)
+{
+    string u;
+    system("CLS");
+    cout << "Nhap URL: ";
+    cin >> u;
+    InsertAtTail(&l, u);
+}
+
+void pageBookMark(List& bm)
+{
+    system("CLS");
+    PrintLinkedList(bm);
+    _getch();
+}
+
+void pageHistory(HistoryList& l)
+{
+    system("CLS");
+    PrintUrl(l);
+    _getch();
+}
+
 int main() {
     
     string str[4] = { "leetcode.com","facebook.com","youtube.com", "zalo.com"};
@@ -176,21 +250,74 @@ int main() {
         addBookMark(BookMark, str[i]);
         BigHistory[i] = str[i];
     }
-    PrintUrl(l);
+    /*PrintUrl(l);
+    cout << endl;
     cout << endl;
     cout << previousUrl(l) << endl;
     cout << previousUrl(l)<<endl;
     PrintUrl(l);
     cout << endl;
     cout << forwardUrl(l) << endl;
-    PrintUrl(l);
+    PrintUrl(l);*/
+
+
+    int imenu = 1;
+    while (true)
+    {
+        int x = 2, y = 0;
+        system("CLS");
+        gotoxy(x, y++);
+        PrintUrl(l);
+        gotoxy(x, y++);
+        cout << "------MENU------- \n\n";
+        gotoxy(x, y++);
+        cout << "1. NhapURL";
+        gotoxy(x, y++);
+        cout << "2. Forward";
+        gotoxy(x, y++);
+        cout << "3. Previous";
+        gotoxy(x, y++);
+        cout << "4. BookMark";
+        gotoxy(x, y++);
+        cout << "5. History";
+        gotoxy(x, y++);
+        cout << "6. Exit";
+
+        imenu = selection(1, 6, 2);
+
+        switch (imenu)
+        {
+        case 1:
+            pageNhap(l);
+            break;
+        case 2:
+            cout << endl;
+            forwardUrl(l);
+            break;
+        case 3:
+            cout << endl;
+            previousUrl(l);
+            break;
+        case 4:
+            pageBookMark(BookMark);
+            _getch();
+            break;
+        case 5:
+            pageHistory(l);
+            break;
+        case 6:
+            exit(0);
+            break;
+        }
+         
+    }
+    
 
     /*PrintLinkedList(BookMark);
     deleteBookMark(BookMark, "zalo.com");
     cout << endl;
     PrintLinkedList(BookMark);*/
 
-    return 0;
 }
 
 
