@@ -1,4 +1,1 @@
-﻿  Source.cpp
-D:\LESSON\CauTrucDuLieu&GiaiThuat\ProjectCuoiKi\TrinhDuyet\DoAnThanhUrl\DoAnThanhUrl\Source.cpp(177,17): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-D:\LESSON\CauTrucDuLieu&GiaiThuat\ProjectCuoiKi\TrinhDuyet\DoAnThanhUrl\DoAnThanhUrl\Source.cpp(177,19): warning C4838: conversion from 'int' to 'SHORT' requires a narrowing conversion
-  DoAnThanhUrl.vcxproj -> D:\LESSON\CauTrucDuLieu&GiaiThuat\ProjectCuoiKi\TrinhDuyet\DoAnThanhUrl\DoAnThanhUrl\x64\Debug\DoAnThanhUrl.exe
+﻿  DoAnThanhUrl.vcxproj -> C:\Users\Admin\Desktop\C++\BÁO CÁO CUỐI KỲ THANH URL\DoAnThanhUrl\x64\Debug\DoAnThanhUrl.exe
