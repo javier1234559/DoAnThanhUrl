@@ -9,7 +9,7 @@
 
 using namespace std;
 
-// ======= Cai dat double link list
+//Khai bao Doublelink list
 struct NodeUrl {
 	string data;
     bool check = false;
@@ -20,14 +20,73 @@ struct HistoryList
     NodeUrl* head =NULL; 
     NodeUrl* tail = NULL; 
 };
+NodeUrl* GetNewNode(string x);
+void InsertAtTail(HistoryList* l, string x);
+void DeleteAtHead(HistoryList* l);
+void DeleteAtTail(HistoryList* l);
+void PrintUrl(HistoryList l);
+string previousUrl(HistoryList& l);
+string forwardUrl(HistoryList& l);
+
+// Khai bao Linked list
+struct Node {
+    int count;
+    string x;
+    Node* next;
+};
+struct List {
+    Node* head =NULL;
+    Node* tail =NULL;
+};
+Node* createNode(string val,int count);
+void addLastNode(List& l, Node* p);
+void xoaNode(List& l, Node* node);
+void PrintLinkedList(List l);
+
+//Khai bao Menu
+void gotoxy(int x, int y);
+int selection(int start, int end, int y);
+void pageBookMark(List& bm);
+void pageHistory(List& l);
+void menuMain();
+void menupageNhap();
+void pageNhap(HistoryList l);
+void menuBookMark();
+void menuBigHistory();
+// Khai bao cac danh sach
+List BigHistory;
+List BookMark;
+HistoryList l;
+void addBookMark(List& bm, string s,int count);
+void deleteBookMark(List& bm, int s);
+void addBigHistory(List& bighistory, string s, int count);
+void deleteHistory(List& bighistory, int count);
+int main() {
+    
+    string str[4] = { "google.com","facebook.com","youtube.com", "zalo.com"};
+   
+    for (int i = 0; i < 4; i++) {
+        InsertAtTail(&l, str[i]);
+        addBookMark(BookMark, str[i],i);
+        addBigHistory(BigHistory, str[i],i);
+    }
+
+    menuMain();
+    
+    //thieu ham them Url
+    //chua fix bug xoa Bookmark va History nhung ko cap nhat lai count
+    //them bookmark moi va them id cho no
+}
+
+//Cai dat Doublelink list
 NodeUrl* GetNewNode(string x) {
-    NodeUrl *newNode = new NodeUrl();
+    NodeUrl* newNode = new NodeUrl();
     newNode->data = x;
     newNode->prev = NULL;
     newNode->next = NULL;
     return newNode;
 }
-void InsertAtTail(HistoryList* l ,string x) {
+void InsertAtTail(HistoryList* l, string x) {
     NodeUrl* newNode = GetNewNode(x);
     if (l->head == NULL) {
         l->head = newNode;
@@ -57,30 +116,40 @@ void PrintUrl(HistoryList l) {
     while (temp->check == true) {
         temp = temp->prev;
     }
+    gotoxy(0, 0);
+    cout << "Url: ";
     while (temp != NULL) {
-        cout << temp->data <<" ";
+        cout << temp->data << " ";
         temp = temp->prev;
     }
-    
+    cout << endl;
 }
-string previousUrl(HistoryList &l) {
+string previousUrl(HistoryList& l) {
     NodeUrl* newNode = new NodeUrl;
     newNode = l.tail;
     while (newNode->check == true) {
         newNode = newNode->prev;
+    }
+    if (newNode->prev == NULL) {
+        return "";
     }
     newNode->check = true;
     newNode = newNode->prev;
 
     string data = newNode->data;
-    
+
     return data;
 }
 string forwardUrl(HistoryList& l) {
     NodeUrl* newNode = new NodeUrl;
     newNode = l.tail;
+    
+
     while (newNode->check == true) {
         newNode = newNode->prev;
+    }
+    if (newNode->next == NULL) {
+        return "";
     }
     newNode = newNode->next;
     newNode->check = false;
@@ -88,22 +157,16 @@ string forwardUrl(HistoryList& l) {
 
     return data;
 }
-// ======= Cai dat linked list
-struct Node {
-    string x;
-    Node* next;
-};
-struct List {
-    Node* head =NULL;
-    Node* tail =NULL;
-};
-Node* createNode(string val) {
+
+// Cai dat Linked list
+Node* createNode(string val,int count) {
     Node* node = new Node;
     node->x = val;
+    node->count = count;
     node->next = NULL;
     return node;
 }
-void addLastNode(List& l, Node* p) {
+void addLastNode(List& l, Node*p) {
     if (l.head == NULL) {
         l.head = p;
         l.tail = p;
@@ -113,7 +176,7 @@ void addLastNode(List& l, Node* p) {
         l.tail = p;
     }
 }
-void xoaNode(List& l, Node* node) {
+void xoaNode(List& l, int count) {
     if (l.head == NULL && l.tail == NULL) {
         return;
     }
@@ -121,12 +184,12 @@ void xoaNode(List& l, Node* node) {
         l.head = NULL;
         l.tail = NULL;
     }
-    else if (node->x == l.head->x) {
+    else if (count == l.head->count) {
         Node* p = l.head;
         l.head = l.head->next;
         delete p;
     }
-    else if (node->x == l.tail->x) {
+    else if (count == l.tail->count) {
         Node* p = l.tail;
         l.tail = l.tail->next;
         delete p;
@@ -136,7 +199,7 @@ void xoaNode(List& l, Node* node) {
         Node* p = l.head;
         while (p != NULL) {
 
-            if (p->next->x == node->x) {
+            if (p->next->count == count) {
                 Node* temp = p->next;
                 p->next = p->next->next;
                 delete temp;
@@ -152,24 +215,12 @@ void xoaNode(List& l, Node* node) {
 }
 void PrintLinkedList(List l) {
     for (Node* i = l.head; i != NULL; i = i->next) {
-        cout << i->x << " ";
+        cout << i->count<<"." << i->x << " ";
+       
     }
 }
 
-// ======= Cai dat mang luu lich su 
-string BigHistory[MAX];
-List BookMark ;
-void addBookMark(List &bm,string s) {
-    Node* p = createNode(s);
-    addLastNode(bm, p);
-}
-void deleteBookMark(List& bm, string s) {
-    Node* p = createNode(s);
-    xoaNode(bm, p);
-}
-
-
-
+//Cai dat Menu
 void gotoxy(int x, int y) {
     static HANDLE  h = NULL;
     if (!h)
@@ -177,7 +228,6 @@ void gotoxy(int x, int y) {
     COORD c = { x,y };
     SetConsoleCursorPosition(h, c);
 }
-
 int selection(int start, int end, int y)
 {
     int select = 1;
@@ -216,50 +266,23 @@ int selection(int start, int end, int y)
     }
     return select;
 }
-
-void pageNhap(HistoryList l)
-{
-    string u;
-    system("CLS");
-    cout << "Nhap URL: ";
-    cin >> u;
-}
-
 void pageBookMark(List& bm)
 {
-    system("CLS");
-    PrintLinkedList(bm);
-    _getch();
+    gotoxy(0, 4);
+    int u;
+    cout << "Nhap so thu tu URL muon xoa: ";
+    cin >> u;
+    deleteBookMark(bm, u);
 }
-
-void pageHistory(HistoryList& l)
+void pageHistory(List& l)
 {
-    system("CLS");
-    PrintUrl(l);
-    _getch();
+    gotoxy(0, 4);
+    int u;
+    cout << "Nhap so thu tu URL muon xoa: ";
+    cin >> u;
+    deleteHistory(l, u);
 }
-
-int main() {
-    
-    string str[4] = { "leetcode.com","facebook.com","youtube.com", "zalo.com"};
-   
-    HistoryList l;
-    for (int i = 0; i < 4; i++) {
-        InsertAtTail(&l, str[i]);
-        addBookMark(BookMark, str[i]);
-        BigHistory[i] = str[i];
-    }
-    /*PrintUrl(l);
-    cout << endl;
-    cout << endl;
-    cout << previousUrl(l) << endl;
-    cout << previousUrl(l)<<endl;
-    PrintUrl(l);
-    cout << endl;
-    cout << forwardUrl(l) << endl;
-    PrintUrl(l);*/
-
-
+void menuMain() {
     int imenu = 1;
     while (true)
     {
@@ -272,17 +295,54 @@ int main() {
         gotoxy(x, y++);
         cout << "1. NhapURL";
         gotoxy(x, y++);
+        cout << "2. BookMark";
+        gotoxy(x, y++);
+        cout << "3. History";
+        gotoxy(x, y++);
+        cout << "4. Exit";
+
+        imenu = selection(1, 4, 2);
+
+        switch (imenu)
+        {
+        case 1:
+            menupageNhap();
+            pageNhap(l);
+            break;
+        case 2:
+            menuBookMark();
+            break;
+        case 3:
+            menuBigHistory();
+            break;
+        case 4:
+            cout << "\nKet thuc chuong trinh ! ";
+            exit(0);
+            break;
+        }
+    }
+}
+void menupageNhap() {
+    int imenu = 1;
+    while (true)
+    {
+        int x = 2, y = 0;
+        system("CLS");
+        gotoxy(x, y++);
+        PrintUrl(l);
+        gotoxy(x, y++);
+        cout << "------MENU------- \n\n";
+        gotoxy(x, y++);
+        cout << "1. Nhap URL";
+        gotoxy(x, y++);
         cout << "2. Forward";
         gotoxy(x, y++);
         cout << "3. Previous";
         gotoxy(x, y++);
-        cout << "4. BookMark";
+        cout << "4. Them BookMark";
         gotoxy(x, y++);
-        cout << "5. History";
-        gotoxy(x, y++);
-        cout << "6. Exit";
-
-        imenu = selection(1, 6, 2);
+        cout << "5. Back to home menu";
+        imenu = selection(1, 5, 2);
 
         switch (imenu)
         {
@@ -296,81 +356,93 @@ int main() {
             previousUrl(l);
             break;
         case 4:
-            pageBookMark(BookMark);
+            //themBookMark
+            cout << "Chua hoan tat";
             break;
         case 5:
-            pageHistory(l);
-            break;
-        case 6:
-            exit(0);
+            menuMain();
             break;
         }
-         
     }
-    
-
-    /*PrintLinkedList(BookMark);
-    deleteBookMark(BookMark, "zalo.com");
-    cout << endl;
-    PrintLinkedList(BookMark);*/
 
 }
+void menuBookMark() {
+    int imenu = 1;
+    while (true)
+    {
+        int x = 2, y = 0;
+        system("CLS");
+        gotoxy(0, 0);
+        cout << "BookMark: ";
+        PrintLinkedList(BookMark);
+        gotoxy(x, y++);
+        gotoxy(x, y++);
+        cout << "------MENU------- \n\n";
+        gotoxy(x, y++);
+        cout << "1. Xoa bookmark";
+        gotoxy(x, y++);
+        cout << "2. Back to home menu";
+        imenu = selection(1, 2, 2);
 
+        switch (imenu)
+        {
+        case 1:
+            pageBookMark(BookMark);
+            break;
+        case 2:
+            menuMain();
+            break;
+        }
+    }
+}
+void menuBigHistory() {
+    int imenu = 1;
+    while (true)
+    {
+        int x = 2, y = 0;
+        system("CLS");
+        gotoxy(0, 0);
+        cout << "BigHistory: ";
+        PrintLinkedList(BigHistory);
+        gotoxy(x, y++);
+        gotoxy(x, y++);
+        cout << "------MENU------- \n\n";
+        gotoxy(x, y++);
+        cout << "1. Xoa history";
+        gotoxy(x, y++);
+        cout << "2. Back to home menu";
+        imenu = selection(1, 2, 2);
 
-
-//  ======= Cai dat stack
-//struct Node {
-//	string data;
-//	Node* next;
-//};
-//typedef struct Node* stack;
-//Node* createNodeStack(string data) {
-//    Node* p = new Node();
-//    if (p == NULL) {
-//        return NULL;
-//    }
-//    p->data = data;
-//    p->next = NULL;
-//
-//    return p;
-//}
-//bool isEmpty(stack& s) {
-//    return (s == NULL);
-//}
-//void push(stack& s, string data) {
-//    Node* ptr = createNodeStack(data);
-//    if (isEmpty(s)) {
-//        s = ptr;
-//    }
-//    else {
-//        ptr->next = s;
-//        s = ptr;
-//    }
-//}
-//string pop(stack& s) {
-//    if (!isEmpty(s)) {
-//        string data = s->data;
-//        Node* x = s;
-//        s = s->next;
-//        delete(x);
-//        return data;
-//    }
-//    else {
-//        return 0;
-//    }
-//}
-//string top(stack s) {
-//    if (!isEmpty(s)) {
-//        return s->data;
-//    }
-//    else {
-//        return 0;
-//    }
-//}
-//
-//void PrintStack(stack& s) {
-//    while (!isEmpty(s)) {
-//        cout << pop(s);
-//        cout << endl;
-//    }
-//}
+        switch (imenu)
+        {
+        case 1:
+            pageHistory(BigHistory);
+            break;
+        case 2:
+            menuMain();
+            break;
+        }
+    }
+}
+void pageNhap(HistoryList l)
+{
+    gotoxy(0, 7);
+    string u;
+    cout << "Nhap URL: ";
+    cin >> u;
+}
+// Cai dat cac danh sach
+void addBookMark(List& bm, string s,int count) {
+    Node* p = createNode(s,count);
+    addLastNode(bm, p);
+}
+void deleteBookMark(List& bm,int count) {
+    xoaNode(bm, count);
+}
+void addBigHistory(List& bighistory, string s, int count) {
+    Node* p = createNode(s, count);
+    addLastNode(bighistory, p);
+}
+void deleteHistory(List& bighistory, int count) {
+    xoaNode(bighistory, count);
+}
