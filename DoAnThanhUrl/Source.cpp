@@ -185,6 +185,7 @@ string currentUrl(HistoryList* l) {
     return data;
 }
 // Cai dat Linked list
+
 Node* createNode(string val,int count) {
     Node* node = new Node;
     node->x = val;
@@ -202,39 +203,41 @@ void addLastNode(List* l, Node*p) {
         l->tail = p;
     }
 }
-void xoaNode(List* l, int count) {
-    if (l->head == NULL && l->tail == NULL) {
+void xoaNode(List* list, int count) {
+    Node* pdel = list->head; 
+    if (pdel == NULL) {
         return;
     }
-    else if (l->head == l->tail) {
-        l->head = NULL;
-        l->tail = NULL;
-    }
-    else if (count == l->head->count) {
-        Node* p = l->head;
-        l->head = l->head->next;
-        delete p;
-    }
-    else if (count == l->tail->count) {
-        Node* p = l->tail;
-        l->tail = l->tail->next;
-        delete p;
-    }
     else {
-        Node* previous = l->head;
-        Node* p = l->head;
-        while (p != NULL) {
-
-            if (p->next->count == count) {
-                Node* temp = p->next;
-                p->next = p->next->next;
-                delete temp;
-                continue;
-            }
-
-            p = p->next;
-            if (p->next == NULL) {
+        Node* pre = NULL;
+        while (pdel != NULL) {
+            if (pdel->count == count) {
                 break;
+            }
+            pre = pdel;
+            pdel = pdel->next;
+        }
+        if (pdel == NULL) {
+            return;
+        }
+        else {
+            if (pdel == list->head) {
+                list->head = list->head->next;
+                pdel->next = NULL;
+                delete pdel;
+                pdel = NULL;
+            }
+            else if (pdel->next == NULL) {
+                list->tail = pre;
+                pre->next = NULL;
+                delete pdel;
+                pdel = NULL;
+            }
+            else {
+                pre->next = pdel->next;
+                pdel->next = NULL;
+                delete pdel;
+                pdel = NULL;
             }
         }
     }
