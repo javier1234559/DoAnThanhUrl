@@ -5,7 +5,7 @@
 #include <string.h>
 #include <string>
 #include <time.h>
-#define MAX 100
+#define MAX_SIZE 100
 
 using namespace std;
 
@@ -27,7 +27,7 @@ void DeleteAtTail(HistoryList* l);
 void PrintUrl(HistoryList l);
 string previousUrl(HistoryList& l);
 string forwardUrl(HistoryList& l);
-
+string currentUrl(HistoryList& l);
 // Khai bao Linked list
 struct Node {
     int count;
@@ -39,41 +39,42 @@ struct List {
     Node* tail =NULL;
 };
 Node* createNode(string val,int count);
-void addLastNode(List& l, Node* p);
+void addLastNode(List* l, Node* p);
 void xoaNode(List& l, Node* node);
 void PrintLinkedList(List l);
 
 //Khai bao Menu
 void gotoxy(int x, int y);
 int selection(int start, int end, int y);
-void pageBookMark(List& bm);
-void pageHistory(List& l);
+void pageBookMark(List* bm);
+void pageHistory(List* l);
 void menuMain();
 void menupageNhap();
-void pageNhap(HistoryList l);
 void menuBookMark();
 void menuBigHistory();
+void pageNhap(HistoryList* l);
+void addBookMark(HistoryList* l);
 // Khai bao cac danh sach
 List BigHistory;
 List BookMark;
 HistoryList l;
-void addBookMark(List& bm, string s,int count);
-void deleteBookMark(List& bm, int s);
-void addBigHistory(List& bighistory, string s, int count);
-void deleteHistory(List& bighistory, int count);
+void addBookMark(List* bm, string s);
+void deleteBookMark(List* bm, int s);
+void addBigHistory(List* bighistory, string s, int count);
+void deleteHistory(List* bighistory, int count);
+int findMaxIndex(List* list);
 int main() {
     
     string str[4] = { "google.com","facebook.com","youtube.com", "zalo.com"};
    
     for (int i = 0; i < 4; i++) {
         InsertAtTail(&l, str[i]);
-        addBookMark(BookMark, str[i],i);
-        addBigHistory(BigHistory, str[i],i);
+        addBookMark(&BookMark, str[i]);
+        addBigHistory(&BigHistory, str[i],i);
     }
-
     menuMain();
     
-    //thieu ham them Url
+   
     //chua fix bug xoa Bookmark va History nhung ko cap nhat lai count
     //them bookmark moi va them id cho no
 }
@@ -122,6 +123,7 @@ void PrintUrl(HistoryList l) {
         cout << temp->data << " ";
         temp = temp->prev;
     }
+    
     cout << endl;
 }
 string previousUrl(HistoryList& l) {
@@ -144,7 +146,6 @@ string forwardUrl(HistoryList& l) {
     NodeUrl* newNode = new NodeUrl;
     newNode = l.tail;
     
-
     while (newNode->check == true) {
         newNode = newNode->prev;
     }
@@ -157,7 +158,32 @@ string forwardUrl(HistoryList& l) {
 
     return data;
 }
-
+string newAndResetUrl(HistoryList* l, string u) {
+    NodeUrl* newAndResetUrl = GetNewNode(u);
+    NodeUrl* newNode = new NodeUrl();
+    newNode = l->tail;
+    while (newNode->check == true) {
+        newNode = newNode->prev;
+        DeleteAtTail(l);
+    }
+    cout << newNode->data << endl;
+    newNode->next = newAndResetUrl;
+    newAndResetUrl->prev = newNode;
+    l->tail = newAndResetUrl;
+    return u;
+}
+string currentUrl(HistoryList* l) {
+    NodeUrl* newNode = new NodeUrl;
+    newNode = l->tail;
+    while (newNode->check == true) {
+        newNode = newNode->prev;
+    }
+    if (newNode->prev == NULL) {
+        return "";
+    }
+    string data = newNode->data;
+    return data;
+}
 // Cai dat Linked list
 Node* createNode(string val,int count) {
     Node* node = new Node;
@@ -166,37 +192,37 @@ Node* createNode(string val,int count) {
     node->next = NULL;
     return node;
 }
-void addLastNode(List& l, Node*p) {
-    if (l.head == NULL) {
-        l.head = p;
-        l.tail = p;
+void addLastNode(List* l, Node*p) {
+    if (l->head == NULL) {
+        l->head = p;
+        l->tail = p;
     }
     else {
-        l.tail->next = p;
-        l.tail = p;
+        l->tail->next = p;
+        l->tail = p;
     }
 }
-void xoaNode(List& l, int count) {
-    if (l.head == NULL && l.tail == NULL) {
+void xoaNode(List* l, int count) {
+    if (l->head == NULL && l->tail == NULL) {
         return;
     }
-    else if (l.head == l.tail) {
-        l.head = NULL;
-        l.tail = NULL;
+    else if (l->head == l->tail) {
+        l->head = NULL;
+        l->tail = NULL;
     }
-    else if (count == l.head->count) {
-        Node* p = l.head;
-        l.head = l.head->next;
+    else if (count == l->head->count) {
+        Node* p = l->head;
+        l->head = l->head->next;
         delete p;
     }
-    else if (count == l.tail->count) {
-        Node* p = l.tail;
-        l.tail = l.tail->next;
+    else if (count == l->tail->count) {
+        Node* p = l->tail;
+        l->tail = l->tail->next;
         delete p;
     }
     else {
-        Node* previous = l.head;
-        Node* p = l.head;
+        Node* previous = l->head;
+        Node* p = l->head;
         while (p != NULL) {
 
             if (p->next->count == count) {
@@ -228,7 +254,7 @@ void gotoxy(int x, int y) {
     COORD c = { x,y };
     SetConsoleCursorPosition(h, c);
 }
-int selection(int start, int end, int y)
+int  selection(int start, int end, int y)
 {
     int select = 1;
     int y0 = -1;
@@ -261,12 +287,11 @@ int selection(int start, int end, int y)
         gotoxy(0, select + y - 1);
         cout << char(16);
 
-
         y0 = select + y - 1;
     }
     return select;
 }
-void pageBookMark(List& bm)
+void pageBookMark(List* bm)
 {
     gotoxy(0, 4);
     int u;
@@ -274,7 +299,7 @@ void pageBookMark(List& bm)
     cin >> u;
     deleteBookMark(bm, u);
 }
-void pageHistory(List& l)
+void pageHistory(List* l)
 {
     gotoxy(0, 4);
     int u;
@@ -307,7 +332,7 @@ void menuMain() {
         {
         case 1:
             menupageNhap();
-            pageNhap(l);
+            pageNhap(&l);
             break;
         case 2:
             menuBookMark();
@@ -343,11 +368,10 @@ void menupageNhap() {
         gotoxy(x, y++);
         cout << "5. Back to home menu";
         imenu = selection(1, 5, 2);
-
         switch (imenu)
         {
         case 1:
-            pageNhap(l);
+            pageNhap(&l);
             break;
         case 2:
             forwardUrl(l);
@@ -356,8 +380,7 @@ void menupageNhap() {
             previousUrl(l);
             break;
         case 4:
-            //themBookMark
-            cout << "Chua hoan tat";
+            addBookMark(&l);
             break;
         case 5:
             menuMain();
@@ -387,7 +410,7 @@ void menuBookMark() {
         switch (imenu)
         {
         case 1:
-            pageBookMark(BookMark);
+            pageBookMark(&BookMark);
             break;
         case 2:
             menuMain();
@@ -416,7 +439,7 @@ void menuBigHistory() {
         switch (imenu)
         {
         case 1:
-            pageHistory(BigHistory);
+            pageHistory(&BigHistory);
             break;
         case 2:
             menuMain();
@@ -424,25 +447,55 @@ void menuBigHistory() {
         }
     }
 }
-void pageNhap(HistoryList l)
+void pageNhap(HistoryList*l)
 {
     gotoxy(0, 7);
     string u;
     cout << "Nhap URL: ";
     cin >> u;
+    int count = findMaxIndex(&BigHistory) + 1;
+    addBigHistory(&BigHistory, u, count);
+    if (l->tail->check == true) {
+        newAndResetUrl(l,u);
+        return;
+    }
+    InsertAtTail(l, u);
+}
+void addBookMark(HistoryList* l) {
+    string current = currentUrl(l);
+    addBookMark(&BookMark, current);
+    gotoxy(0, 8);
+    cout << "Them bookmark thanh cong !";
+    _getch();
 }
 // Cai dat cac danh sach
-void addBookMark(List& bm, string s,int count) {
+void addBookMark(List* bm, string s) {
+    int count = findMaxIndex(bm) + 1;
     Node* p = createNode(s,count);
     addLastNode(bm, p);
 }
-void deleteBookMark(List& bm,int count) {
+void deleteBookMark(List* bm,int count) {
     xoaNode(bm, count);
 }
-void addBigHistory(List& bighistory, string s, int count) {
+void addBigHistory(List* bighistory, string s, int count) {
     Node* p = createNode(s, count);
     addLastNode(bighistory, p);
 }
-void deleteHistory(List& bighistory, int count) {
+void deleteHistory(List* bighistory, int count) {
     xoaNode(bighistory, count);
+}
+int findMaxIndex(List* list) {
+    Node* temp = list->head;
+    int max;
+    if (temp == NULL) {
+        max = 0;
+        return max;
+    }
+    max = list->head->count;
+    for (Node* i = list->head; i != NULL; i = i->next) {
+        if (max < i->count)
+            max = i->count;
+    }
+
+    return max;
 }
