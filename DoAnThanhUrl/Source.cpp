@@ -6,7 +6,7 @@
 #include <string.h>
 #include <string>
 #include <time.h>
-#define MAX_SIZE 100
+#define SIZE 7
 
 using namespace std;
 
@@ -45,6 +45,12 @@ void addLastNode(LinkedList* l, Node* p);
 void xoaNode(LinkedList* l, Node* node);
 void printLinkedList(LinkedList l);
 
+//Khai bao HashTable
+void initHashTable(DoubleLinkList* Tabs[]);
+void addToHashTable(DoubleLinkList* Tabs[], string x);
+int hashFunc(string x);
+void displayAllTabs(DoubleLinkList* Tabs[]);
+DoubleLinkList* SearchHashTable(DoubleLinkList* Tabs[], string x);
 
 //Khai bao Menu
 void gotoxy(int x, int y);
@@ -53,13 +59,14 @@ void menuMain(DoubleLinkList* l);
 void menuInputNewUrl(DoubleLinkList* l);
 void menuBookMark(DoubleLinkList* l);
 void menuBigHistory(DoubleLinkList* l);
-
+void menuNewTab(); //Tabs khai bao toan cuc
 
 //Ham di chuyen de Nhap
 void InputNewUrl(DoubleLinkList* l);
 void InputBookMarkToDel(LinkedList* bm);
 void InputHistoryToDel(LinkedList* l);
-
+void InputNewTab(DoubleLinkList* Tabs[]);
+void InputTabToAccess(DoubleLinkList* Tabs[]);
 
 //Ham thao tac 
 void GetCurrentAndAddBookMark(DoubleLinkList* l);
@@ -68,23 +75,21 @@ void addBookMark(LinkedList* bm, string s);
 void addBigHistory(LinkedList* bighistory, string s, int count);
 void deleteHistory(LinkedList* bighistory, int count);
 void accessLink(string str);
-int findMaxIndex(LinkedList* list);
+int findLastIndex(LinkedList* list);
 
 
 //Khai bao cac danh sach
 LinkedList BigHistory;  //vi 2 danh sach dung chung nen khai bao toan cuc
 LinkedList BookMark;
-
+DoubleLinkList* Tabs[SIZE];
 int main() {
-	DoubleLinkList l;
 
-	//Bat dau tu google.com
-	string str = "google.com";
-	insertAtTail(&l, str);
-	//addBookMark(&BookMark, str);
-	addBigHistory(&BigHistory, str, 1);
+	initHashTable(Tabs);
 
-	menuMain(&l);
+	//Khoi tao san Tab1
+	addToHashTable(Tabs, "Tab1");
+	DoubleLinkList* l = SearchHashTable(Tabs, "Tab1");
+	menuMain(l);
 
 
 	return 0;
@@ -319,9 +324,11 @@ void menuMain(DoubleLinkList* l) {
 		gotoxy(x, y++);
 		cout << "3. HISTORY";
 		gotoxy(x, y++);
-		cout << "4. EXIT";
+		cout << "4. MENU NEW TAB";
+		gotoxy(x, y++);
+		cout << "5. EXIT";
 
-		imenu = selection(1, 4, 2);
+		imenu = selection(1, 5, 2);
 
 		switch (imenu)
 		{
@@ -336,6 +343,9 @@ void menuMain(DoubleLinkList* l) {
 			menuBigHistory(l);
 			break;
 		case 4:
+			menuNewTab();
+			break;
+		case 5:
 			cout << "\nKet thuc chuong trinh ! ";
 			exit(0);
 			break;
@@ -450,7 +460,35 @@ void menuBigHistory(DoubleLinkList* l) {
 		}
 	}
 }
+void menuNewTab() { //Tabs da khai bao toan cuc
+	int imenu = 1;
+	while (true)
+	{
+		int x = 2, y = 0;
+		system("CLS");
+		gotoxy(0, 0);
+		cout << "Danh sach cac Tab: ";
+		displayAllTabs(Tabs);
+		gotoxy(x, y++);
+		gotoxy(x, y++);
+		cout << "------MENU------- \n\n";
+		gotoxy(x, y++);
+		cout << "1.Nhap key New Tab";
+		gotoxy(x, y++);
+		cout << "2.Truy Cap Tab";
+		imenu = selection(1, 2, 2);
 
+		switch (imenu)
+		{
+		case 1:
+			InputNewTab(Tabs);
+			break;
+		case 2:
+			InputTabToAccess(Tabs);
+			break;
+		}
+	}
+}
 
 //Ham di chuyen de Nhap
 void InputNewUrl(DoubleLinkList* l)
@@ -459,7 +497,7 @@ void InputNewUrl(DoubleLinkList* l)
 	string u;
 	cout << "Nhap URL: ";
 	cin >> u;
-	int count = findMaxIndex(&BigHistory) + 1;
+	int count = findLastIndex(&BigHistory) + 1;
 	addBigHistory(&BigHistory, u, count);
 	if (l->tail->check == true) {
 		newAndResetUrl(l, u);
@@ -483,7 +521,30 @@ void InputHistoryToDel(LinkedList* l)
 	cin >> u;
 	deleteHistory(l, u);
 }
+void InputNewTab(DoubleLinkList* Tabs[]) {
+	gotoxy(0, 4);
+	string key;
+	cout << "Nhap ten Tab khong duoc trung : ";
+	cin >> key;
+	addToHashTable(Tabs, key);
 
+	//Di chuyen den Tab vua nhap 
+	DoubleLinkList* l = SearchHashTable(Tabs, key);
+	menuMain(l);
+}
+void InputTabToAccess(DoubleLinkList* Tabs[]) {
+	gotoxy(0, 4);
+	string key;
+	cout << "Nhap Ten Tab De Truy Cap : ";
+	cin >> key;
+	DoubleLinkList* l = SearchHashTable(Tabs, key);
+	if (l != NULL && l->head != NULL)
+		menuMain(l);
+	else {
+		cout << "\nTen Tab Khong Ton Tai !";
+		_getch(); //pause 
+	}
+}
 
 //Ham thao tac
 void GetCurrentAndAddBookMark(DoubleLinkList* l) {
@@ -494,7 +555,7 @@ void GetCurrentAndAddBookMark(DoubleLinkList* l) {
 	_getch();
 }
 void addBookMark(LinkedList* bm, string s) {
-	int count = findMaxIndex(bm) + 1;
+	int count = findLastIndex(bm) + 1;
 	Node* p = createNode(s, count);
 	addLastNode(bm, p);
 }
@@ -513,7 +574,7 @@ void accessLink(string str) {
 	system(std::string("start " + str).c_str());
 	system("pause>>null");
 }
-int findMaxIndex(LinkedList* list) { //ham tim gia tri chi muc lon nhat de them id cho danh sach lk
+int findLastIndex(LinkedList* list) { //ham tim gia tri chi muc lon nhat de them id cho danh sach lk
 	Node* temp = list->head;
 	int max;
 	if (temp == NULL) {
@@ -527,4 +588,47 @@ int findMaxIndex(LinkedList* list) { //ham tim gia tri chi muc lon nhat de them 
 	}
 
 	return max;
+}
+
+
+//Cai dat Hashtable
+void initHashTable(DoubleLinkList* Tabs[])
+{
+	for (int i = 0; i < SIZE; i++) {
+		DoubleLinkList* temp = new DoubleLinkList();
+		temp->head = NULL;
+		temp->tail = NULL;
+		Tabs[i] = temp;
+	}
+}
+int hashFunc(string x) {
+	int sum = 0;
+	for (int i = 0; i < x.length(); i++)
+		sum = sum + int(x[i]);
+
+	return  sum % SIZE;
+}
+void addToHashTable(DoubleLinkList* Tabs[], string x) {
+	int h = hashFunc(x);
+	DoubleLinkList* Tab = Tabs[h];
+	insertAtTail(Tab, x);
+
+}
+void displayAllTabs(DoubleLinkList* Tabs[]) {
+	for (int i = 0; i < SIZE; i++) {
+		if (Tabs[i]->head != NULL) {
+			NodeUrl* p = Tabs[i]->head;
+			cout << p->data << " ";
+		}
+	}
+}
+DoubleLinkList* SearchHashTable(DoubleLinkList* Tabs[], string x) {
+	int h = hashFunc(x);
+	DoubleLinkList* Tab = Tabs[h];
+
+	while (Tab->head != NULL && Tab->head->data != x) {
+		Tab->head = Tab->head->next;
+	}
+
+	return Tab;
 }
