@@ -25,11 +25,12 @@ NodeUrl* createNodeUrl(string x);
 void insertAtTail(DoubleLinkList* l, string x);
 void deleteAtTail(DoubleLinkList* l);
 void printUrl(DoubleLinkList l);
-string previousUrl(DoubleLinkList& l);
-string forwardUrl(DoubleLinkList& l);
-string currentUrl(DoubleLinkList& l);
+string previousUrl(DoubleLinkList* l);
+string forwardUrl(DoubleLinkList* l);
+string currentUrl(DoubleLinkList* l);
 
-// Khai bao Linked list
+
+//Khai bao Linked list
 struct Node {
 	int count;
 	string x;
@@ -41,35 +42,41 @@ struct LinkedList {
 };
 Node* createNode(string val, int count);
 void addLastNode(LinkedList* l, Node* p);
-void xoaNode(LinkedList& l, Node* node);
-void printLinkedLinkedList(LinkedList l);
+void xoaNode(LinkedList* l, Node* node);
+void printLinkedList(LinkedList l);
+
 
 //Khai bao Menu
 void gotoxy(int x, int y);
 int  selection(int start, int end, int y);
-void pageBookMark(LinkedList* bm);
-void pageHistory(LinkedList* l);
-void menuMain();
-void menupageNhap();
-void menuBookMark();
-void menuBigHistory();
-void pageNhap(DoubleLinkList* l);
+void menuMain(DoubleLinkList* l);
+void menuInputNewUrl(DoubleLinkList* l);
+void menuBookMark(DoubleLinkList* l);
+void menuBigHistory(DoubleLinkList* l);
+
+
+//Ham di chuyen de Nhap
+void InputNewUrl(DoubleLinkList* l);
+void InputBookMarkToDel(LinkedList* bm);
+void InputHistoryToDel(LinkedList* l);
+
 
 //Ham thao tac 
-void addBookMark(DoubleLinkList* l);
-void addBookMark(LinkedList* bm, string s);
+void GetCurrentAndAddBookMark(DoubleLinkList* l);
 void deleteBookMark(LinkedList* bm, int s);
+void addBookMark(LinkedList* bm, string s);
 void addBigHistory(LinkedList* bighistory, string s, int count);
 void deleteHistory(LinkedList* bighistory, int count);
 void accessLink(string str);
+int findMaxIndex(LinkedList* list);
+
 
 //Khai bao cac danh sach
-LinkedList BigHistory;
+LinkedList BigHistory;  //vi 2 danh sach dung chung nen khai bao toan cuc
 LinkedList BookMark;
-DoubleLinkList l;
 
-int findMaxIndex(LinkedList* list);
 int main() {
+	DoubleLinkList l;
 
 	//Bat dau tu google.com
 	string str = "google.com";
@@ -77,7 +84,7 @@ int main() {
 	//addBookMark(&BookMark, str);
 	addBigHistory(&BigHistory, str, 1);
 
-	menuMain();
+	menuMain(&l);
 
 
 	return 0;
@@ -125,9 +132,9 @@ void printUrl(DoubleLinkList l) {
 
 	cout << endl;
 }
-string previousUrl(DoubleLinkList& l) {
+string previousUrl(DoubleLinkList* l) {
 	NodeUrl* newNode = new NodeUrl;
-	newNode = l.tail;
+	newNode = l->tail;
 	while (newNode->check == true) {
 		newNode = newNode->prev;
 	}
@@ -141,9 +148,9 @@ string previousUrl(DoubleLinkList& l) {
 
 	return data;
 }
-string forwardUrl(DoubleLinkList& l) {
+string forwardUrl(DoubleLinkList* l) {
 	NodeUrl* newNode = new NodeUrl;
-	newNode = l.tail;
+	newNode = l->tail;
 
 	while (newNode->check == true) {
 		newNode = newNode->prev;
@@ -183,8 +190,9 @@ string currentUrl(DoubleLinkList* l) {
 	string data = newNode->data;
 	return data;
 }
-// Cai dat Linked list
 
+
+// Cai dat Linked list
 Node* createNode(string val, int count) {
 	Node* node = new Node;
 	node->x = val;
@@ -241,12 +249,13 @@ void xoaNode(LinkedList* list, int count) {
 		}
 	}
 }
-void printLinkedLinkedList(LinkedList l) {
+void printLinkedList(LinkedList l) {
 	for (Node* i = l.head; i != NULL; i = i->next) {
 		cout << i->count << "." << i->x << " ";
 
 	}
 }
+
 
 //Cai dat Menu
 void gotoxy(int x, int y) {
@@ -293,30 +302,14 @@ int  selection(int start, int end, int y)
 	}
 	return select;
 }
-void pageBookMark(LinkedList* bm)
-{
-	gotoxy(0, 4);
-	int u;
-	cout << "Nhap so thu tu URL muon xoa: ";
-	cin >> u;
-	deleteBookMark(bm, u);
-}
-void pageHistory(LinkedList* l)
-{
-	gotoxy(0, 4);
-	int u;
-	cout << "Nhap so thu tu URL muon xoa: ";
-	cin >> u;
-	deleteHistory(l, u);
-}
-void menuMain() {
+void menuMain(DoubleLinkList* l) {
 	int imenu = 1;
 	while (true)
 	{
 		int x = 2, y = 0;
 		system("CLS");
 		gotoxy(x, y++);
-		printUrl(l);
+		printUrl(*l);
 		gotoxy(x, y++);
 		cout << "------MENU------- \n\n";
 		gotoxy(x, y++);
@@ -333,14 +326,14 @@ void menuMain() {
 		switch (imenu)
 		{
 		case 1:
-			menupageNhap();
-			pageNhap(&l);
+			menuInputNewUrl(l);
+			InputNewUrl(l);
 			break;
 		case 2:
-			menuBookMark();
+			menuBookMark(l);
 			break;
 		case 3:
-			menuBigHistory();
+			menuBigHistory(l);
 			break;
 		case 4:
 			cout << "\nKet thuc chuong trinh ! ";
@@ -349,14 +342,14 @@ void menuMain() {
 		}
 	}
 }
-void menupageNhap() {
+void menuInputNewUrl(DoubleLinkList* l) {
 	int imenu = 1;
 	while (true)
 	{
 		int x = 2, y = 0;
 		system("CLS");
 		gotoxy(x, y++);
-		printUrl(l);
+		printUrl(*l);
 		gotoxy(x, y++);
 		cout << "------MENU------- \n\n";
 		gotoxy(x, y++);
@@ -375,7 +368,7 @@ void menupageNhap() {
 		switch (imenu)
 		{
 		case 1:
-			pageNhap(&l);
+			InputNewUrl(l);
 			break;
 		case 2:
 			forwardUrl(l);
@@ -384,13 +377,13 @@ void menupageNhap() {
 			previousUrl(l);
 			break;
 		case 4:
-			addBookMark(&l);
+			GetCurrentAndAddBookMark(l);
 			break;
 		case 5:
-			menuMain();
+			menuMain(l);
 			break;
 		case 6:
-			string link = currentUrl(&l);
+			string link = currentUrl(l);
 			accessLink(link);
 			break;
 
@@ -399,7 +392,7 @@ void menupageNhap() {
 	}
 
 }
-void menuBookMark() {
+void menuBookMark(DoubleLinkList* l) {
 	int imenu = 1;
 	while (true)
 	{
@@ -407,7 +400,7 @@ void menuBookMark() {
 		system("CLS");
 		gotoxy(0, 0);
 		cout << "BookMark: ";
-		printLinkedLinkedList(BookMark);
+		printLinkedList(BookMark);
 		gotoxy(x, y++);
 		gotoxy(x, y++);
 		cout << "------MENU------- \n\n";
@@ -420,15 +413,15 @@ void menuBookMark() {
 		switch (imenu)
 		{
 		case 1:
-			pageBookMark(&BookMark);
+			InputBookMarkToDel(&BookMark);
 			break;
 		case 2:
-			menuMain();
+			menuMain(l);
 			break;
 		}
 	}
 }
-void menuBigHistory() {
+void menuBigHistory(DoubleLinkList* l) {
 	int imenu = 1;
 	while (true)
 	{
@@ -436,7 +429,7 @@ void menuBigHistory() {
 		system("CLS");
 		gotoxy(0, 0);
 		cout << "BigHistory: ";
-		printLinkedLinkedList(BigHistory);
+		printLinkedList(BigHistory);
 		gotoxy(x, y++);
 		gotoxy(x, y++);
 		cout << "------MENU------- \n\n";
@@ -449,15 +442,18 @@ void menuBigHistory() {
 		switch (imenu)
 		{
 		case 1:
-			pageHistory(&BigHistory);
+			InputHistoryToDel(&BigHistory);
 			break;
 		case 2:
-			menuMain();
+			menuMain(l);
 			break;
 		}
 	}
 }
-void pageNhap(DoubleLinkList* l)
+
+
+//Ham di chuyen de Nhap
+void InputNewUrl(DoubleLinkList* l)
 {
 	gotoxy(0, 9);
 	string u;
@@ -471,20 +467,32 @@ void pageNhap(DoubleLinkList* l)
 	}
 	insertAtTail(l, u);
 }
-void addBookMark(DoubleLinkList* l) {
+void InputBookMarkToDel(LinkedList* bm)
+{
+	gotoxy(0, 4);
+	int u;
+	cout << "Nhap so thu tu URL muon xoa: ";
+	cin >> u;
+	deleteBookMark(bm, u);
+}
+void InputHistoryToDel(LinkedList* l)
+{
+	gotoxy(0, 4);
+	int u;
+	cout << "Nhap so thu tu URL muon xoa: ";
+	cin >> u;
+	deleteHistory(l, u);
+}
+
+
+//Ham thao tac
+void GetCurrentAndAddBookMark(DoubleLinkList* l) {
 	string current = currentUrl(l);
 	addBookMark(&BookMark, current);
 	gotoxy(0, 8);
 	cout << "Them bookmark thanh cong !";
 	_getch();
 }
-void accessLink(string str) {
-	str = "https://" + str;  //them giao thuc 
-	system(std::string("start " + str).c_str());
-	system("pause>>null");
-}
-
-// Cai dat cac danh sach
 void addBookMark(LinkedList* bm, string s) {
 	int count = findMaxIndex(bm) + 1;
 	Node* p = createNode(s, count);
@@ -499,6 +507,11 @@ void addBigHistory(LinkedList* bighistory, string s, int count) {
 }
 void deleteHistory(LinkedList* bighistory, int count) {
 	xoaNode(bighistory, count);
+}
+void accessLink(string str) {
+	str = "https://" + str;  //them giao thuc 
+	system(std::string("start " + str).c_str());
+	system("pause>>null");
 }
 int findMaxIndex(LinkedList* list) { //ham tim gia tri chi muc lon nhat de them id cho danh sach lk
 	Node* temp = list->head;
