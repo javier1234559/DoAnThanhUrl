@@ -82,6 +82,7 @@ int findLastIndex(LinkedList* list);
 LinkedList BigHistory;  //vi 2 danh sach dung chung nen khai bao toan cuc
 LinkedList BookMark;
 DoubleLinkList* Tabs[SIZE];
+
 int main() {
 
 	initHashTable(Tabs);
