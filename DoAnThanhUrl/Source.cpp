@@ -277,7 +277,6 @@ int  selection(int start, int end, int y)
 	int y0 = -1;
 	gotoxy(0, select + y - 1);
 	cout << char(16);
-
 	while (1)
 	{
 		char key = _getch();
@@ -310,8 +309,7 @@ int  selection(int start, int end, int y)
 }
 void menuMain(DoubleLinkList* l) {
 	int imenu = 1;
-	while (true)
-	{
+	while (true) {
 		int x = 2, y = 0;
 		system("CLS");
 		gotoxy(x, y++);
@@ -328,9 +326,7 @@ void menuMain(DoubleLinkList* l) {
 		cout << "4. MENU NEW TAB";
 		gotoxy(x, y++);
 		cout << "5. EXIT";
-
 		imenu = selection(1, 5, 2);
-
 		switch (imenu)
 		{
 		case 1:
@@ -592,7 +588,7 @@ int findLastIndex(LinkedList* list) { //ham tim gia tri chi muc lon nhat de them
 }
 
 
-//Cai dat Hashtable
+//Khai bao Hashtable
 void initHashTable(DoubleLinkList* Tabs[])
 {
 	for (int i = 0; i < SIZE; i++) {
